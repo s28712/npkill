@@ -3,16 +3,44 @@ import os
 # Import shutil to remove a directory and all contents
 import shutil
 
+# Text colors
+CGREY = '\33[90m'
+OKGREEN = '\033[92m'
+FAIL = '\033[91m'
+
 # Main function
 def main():
+  directory_list = []
   # Get current directory
   directory = os.getcwd()
   # Crawl through all subdirectories
   for root, subdirectories, files in os.walk(directory):
     for subdirectory in subdirectories:
-      # If the subdirectory is node_modules, remove directory
+      # If the subdirectory is node_modules, add to directory_list
       if subdirectory == "node_modules":
-        shutil.rmtree(os.path.join(root, subdirectory))
-        
+        directory_list.append(os.path.join(root, subdirectory))
+  
+  # Check if node_modules not found
+  if len(directory_list) == 0:
+    print(FAIL + "No node_modules found")
+    return
+
+  # Display all of the node_modules found
+  print("Found the following directories with node_modules:")
+  for curr_dir in directory_list: 
+    print("-> " + curr_dir)
+
+  # Confirm deleting
+  question = "\nRemove all node_modules listed above? [Y/n]: " + OKGREEN
+  ans = input(question)
+
+  # When user confirms
+  if ans == '' or ans == 'Y' or ans == 'y':
+    # Delete each directory and print
+    for curr_dir in directory_list:
+      shutil.rmtree(curr_dir)
+      print(CGREY + 'Deleted ' + curr_dir)
+
+
 if __name__ == '__main__':
   main()
